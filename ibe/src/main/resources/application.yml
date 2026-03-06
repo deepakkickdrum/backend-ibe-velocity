@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: ibe
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format-sql: false
+        jdbc:
+          time-zone: UTC
+          batch-size: 50
+        order-inserts: true
+        order-updates: true
+        query:
+          in-clause-parameter-padding: true
+    show-sql: false
+
+  datasource:
+    hikari:
+      maximum-pool-size: 20
