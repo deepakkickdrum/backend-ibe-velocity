@@ -14,7 +14,6 @@ phases:
 
   build:
     commands:
-      - cd ibe
       - echo "Building Spring Boot application"
       - mvn clean package -DskipTests
       - echo "Listing build output"
@@ -22,27 +21,13 @@ phases:
 
   post_build:
     commands:
-      - cd ibe
       - echo "Preparing Elastic Beanstalk deployment bundle"
-      - mkdir -p deploy/.ebextensions
+      - mkdir -p deploy
       - JAR_FILE=$(find target -maxdepth 1 -type f -name "*.jar" ! -name "*sources*" | head -n 1)
       - test -n "$JAR_FILE" || { echo "No JAR file found in target"; exit 1; }
       - echo "Packaging $JAR_FILE"
       - cp "$JAR_FILE" deploy/application.jar
       - cp Procfile deploy/Procfile
-      - echo "Fetching secrets from AWS Secrets Manager"
-      - SECRET=$(aws secretsmanager get-secret-value --secret-id ibe/prod/db --query SecretString --output text)
-      - DB_URL=$(echo $SECRET | jq -r '.DB_URL')
-      - DB_USERNAME=$(echo $SECRET | jq -r '.DB_USERNAME')
-      - DB_PASSWORD=$(echo $SECRET | jq -r '.DB_PASSWORD')
-      - |
-        cat > deploy/.ebextensions/00-env-vars.config << EOF
-        option_settings:
-          aws:elasticbeanstalk:application:environment:
-            DB_URL: ${DB_URL}
-            DB_USERNAME: ${DB_USERNAME}
-            DB_PASSWORD: ${DB_PASSWORD}
-        EOF
       - ls -la deploy
 
 artifacts:
