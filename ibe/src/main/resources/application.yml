@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ibe
+    name: ibe-velocity
 
   jpa:
     open-in-view: false
@@ -21,3 +21,7 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 20
+
+ibe:
+  config:
+    calendar-days: 90

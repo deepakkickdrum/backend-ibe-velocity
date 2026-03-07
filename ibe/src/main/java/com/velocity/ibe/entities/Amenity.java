@@ -19,6 +19,6 @@ public class Amenity extends BaseEntity {
     @Column(nullable = false)
     private String label;
 
-    @ManyToMany(mappedBy = "amenities")
-    private List<RoomType> roomTypes;
+    @OneToMany(mappedBy = "amenity")
+    private List<RoomTypeAmenity> roomTypes;
 }

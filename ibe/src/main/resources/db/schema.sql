@@ -1,8 +1,12 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS tenants (
-    id              UUID PRIMARY KEY,
-    name            VARCHAR(255) NOT NULL,
+    id               UUID PRIMARY KEY,
+    name             VARCHAR(255) NOT NULL,
+    logo_url         TEXT,
+    banner_image_url TEXT,
+    created_at       TIMESTAMP NOT NULL,
+    updated_at       TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS properties (
@@ -10,7 +14,11 @@ CREATE TABLE IF NOT EXISTS properties (
     tenant_id         UUID REFERENCES tenants (id) ON DELETE CASCADE,
     name              VARCHAR(255) NOT NULL,
     max_booking_rooms INT,
-    banner_image_url  TEXT
+    min_stay          INT NOT NULL DEFAULT 1,
+    max_stay          INT NOT NULL DEFAULT 7,
+    banner_image_url  TEXT,
+    created_at        TIMESTAMP NOT NULL,
+    updated_at        TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS landing_page_configs (
@@ -19,8 +27,6 @@ CREATE TABLE IF NOT EXISTS landing_page_configs (
     show_guests_option BOOLEAN,
     show_rooms_option  BOOLEAN,
     show_acc_option    BOOLEAN,
-    logo_url        TEXT,
-    banner_image_url TEXT,
     created_at         TIMESTAMP NOT NULL,
     updated_at         TIMESTAMP NOT NULL
 );
@@ -30,12 +36,16 @@ CREATE TABLE IF NOT EXISTS guest_types (
     property_id UUID REFERENCES properties (id) ON DELETE CASCADE,
     name        VARCHAR(100) NOT NULL,
     min_age     INT,
-    max_age     INT
+    max_age     INT,
+    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS bed_types (
-    id   UUID PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
+    id         UUID PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS room_types (
@@ -46,19 +56,26 @@ CREATE TABLE IF NOT EXISTS room_types (
     description   TEXT,
     size_sqft     DECIMAL(10, 2),
     max_occupancy INT,
-    images        JSONB
+    images        JSONB,
+    created_at    TIMESTAMP NOT NULL,
+    updated_at    TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS amenities (
     id          UUID PRIMARY KEY,
     property_id UUID REFERENCES properties (id) ON DELETE CASCADE,
-    label       VARCHAR(255) NOT NULL
+    label       VARCHAR(255) NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS room_type_amenities (
+    id           UUID PRIMARY KEY,
     room_type_id UUID REFERENCES room_types (id) ON DELETE CASCADE,
     amenity_id   UUID REFERENCES amenities (id) ON DELETE CASCADE,
-    PRIMARY KEY (room_type_id, amenity_id)
+    created_at   TIMESTAMP NOT NULL,
+    updated_at   TIMESTAMP NOT NULL,
+    UNIQUE (room_type_id, amenity_id)
 );
 
 CREATE TABLE IF NOT EXISTS room_rates (
@@ -66,7 +83,9 @@ CREATE TABLE IF NOT EXISTS room_rates (
     property_id  UUID REFERENCES properties (id) ON DELETE CASCADE,
     room_type_id UUID REFERENCES room_types (id) ON DELETE CASCADE,
     date         DATE NOT NULL,
-    price        DECIMAL(10, 2) NOT NULL
+    price        DECIMAL(10, 2) NOT NULL,
+    created_at   TIMESTAMP NOT NULL,
+    updated_at   TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS bookings (
