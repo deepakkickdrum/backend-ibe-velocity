@@ -1,6 +1,7 @@
 package com.velocity.ibe.services.impl;
 
 import com.velocity.ibe.dto.config.CalendarRateDto;
+import com.velocity.ibe.dto.config.CalendarDayDto;
 import com.velocity.ibe.dto.config.ConfigResponseDto;
 import com.velocity.ibe.dto.config.GuestTypeConfigDto;
 import com.velocity.ibe.dto.config.PropertyConfigDto;
@@ -8,7 +9,6 @@ import com.velocity.ibe.dto.config.TenantConfigDto;
 import com.velocity.ibe.entities.GuestType;
 import com.velocity.ibe.entities.LandingPageConfig;
 import com.velocity.ibe.entities.Property;
-import com.velocity.ibe.entities.RoomRate;
 import com.velocity.ibe.entities.Tenant;
 import com.velocity.ibe.repositories.PropertyRepository;
 import com.velocity.ibe.repositories.RoomRateRepository;
@@ -92,9 +92,8 @@ public class ConfigServiceImpl implements ConfigService {
             .findAvailableMinRatesByProperty(propertyId, startDate, endDate)
             .stream()
             .collect(Collectors.toMap(
-                RoomRate::getDate,
-                RoomRate::getPrice,
-                BigDecimal::min
+                CalendarDayDto::date,
+                CalendarDayDto::minNightlyRate
             ));
 
         return IntStream.range(0, calendarDays)

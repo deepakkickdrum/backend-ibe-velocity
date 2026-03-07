@@ -1,5 +1,6 @@
 package com.velocity.ibe.repositories;
 
+import com.velocity.ibe.dto.config.CalendarDayDto;
 import com.velocity.ibe.entities.RoomRate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,15 +12,17 @@ import java.util.UUID;
 
 public interface RoomRateRepository extends JpaRepository<RoomRate, UUID> {
 
-    @Query(value = """
-        SELECT rr.* FROM room_rates rr
-        JOIN room_inventory ri ON ri.room_type_id = rr.room_type_id AND ri.date = rr.date
-        WHERE rr.property_id = :propertyId
+    @Query("""
+        SELECT new com.velocity.ibe.dto.config.CalendarDayDto(rr.date, MIN(rr.price))
+        FROM RoomRate rr
+        JOIN RoomInventory ri ON ri.roomType = rr.roomType AND ri.date = rr.date
+        WHERE rr.property.id = :propertyId
           AND rr.date BETWEEN :startDate AND :endDate
-          AND ri.available_rooms > 0
+          AND ri.availableRooms > 0
+        GROUP BY rr.date
         ORDER BY rr.date ASC
-    """, nativeQuery = true)
-    List<RoomRate> findAvailableMinRatesByProperty(
+    """)
+    List<CalendarDayDto> findAvailableMinRatesByProperty(
         @Param("propertyId") UUID propertyId,
         @Param("startDate")  LocalDate startDate,
         @Param("endDate")    LocalDate endDate
