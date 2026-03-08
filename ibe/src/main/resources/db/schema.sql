@@ -10,15 +10,16 @@ CREATE TABLE IF NOT EXISTS tenants (
 );
 
 CREATE TABLE IF NOT EXISTS properties (
-    id                UUID PRIMARY KEY,
-    tenant_id         UUID REFERENCES tenants (id) ON DELETE CASCADE,
-    name              VARCHAR(255) NOT NULL,
-    max_booking_rooms INT,
-    min_stay          INT NOT NULL DEFAULT 1,
-    max_stay          INT NOT NULL DEFAULT 7,
-    banner_image_url  TEXT,
-    created_at        TIMESTAMP NOT NULL,
-    updated_at        TIMESTAMP NOT NULL
+    id                  UUID PRIMARY KEY,
+    tenant_id           UUID REFERENCES tenants (id) ON DELETE CASCADE,
+    name                VARCHAR(255) NOT NULL,
+    max_booking_rooms   INT,
+    max_guests_per_room INT,
+    min_stay            INT NOT NULL DEFAULT 1,
+    max_stay            INT NOT NULL DEFAULT 7,
+    banner_image_url    TEXT,
+    created_at          TIMESTAMP NOT NULL,
+    updated_at          TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS landing_page_configs (

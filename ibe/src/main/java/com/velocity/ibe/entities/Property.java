@@ -22,6 +22,9 @@ public class Property extends BaseEntity {
     @Column(name = "max_booking_rooms")
     private Integer maxBookingRooms;
 
+    @Column(name = "max_guests_per_room")
+    private Integer maxGuestsPerRoom;
+
     @Column(name = "min_stay", nullable = false)
     private Integer minStay;
 

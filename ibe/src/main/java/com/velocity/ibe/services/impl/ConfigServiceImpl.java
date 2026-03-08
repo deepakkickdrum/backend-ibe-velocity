@@ -118,7 +118,8 @@ public class ConfigServiceImpl implements ConfigService {
                 p.getMaxBookingRooms(),
                 p.getMinStay(),
                 p.getMaxStay(),
-                p.getBannerImageUrl()
+                p.getBannerImageUrl(),
+                p.getMaxGuestsPerRoom()
             ))
             .toList();
 

@@ -8,6 +8,7 @@ public record PropertyConfigDto(
         Integer maxBookingRooms,
         Integer minStay,
         Integer maxStay,
-        String bannerImageUrl
+        String bannerImageUrl,
+        Integer maxGuestsPerRoom
 ) {
 }
