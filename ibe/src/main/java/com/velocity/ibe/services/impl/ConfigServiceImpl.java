@@ -1,7 +1,6 @@
 package com.velocity.ibe.services.impl;
 
 import com.velocity.ibe.dto.config.CalendarRateDto;
-import com.velocity.ibe.dto.config.CalendarDayDto;
 import com.velocity.ibe.dto.config.ConfigResponseDto;
 import com.velocity.ibe.dto.config.GuestTypeConfigDto;
 import com.velocity.ibe.dto.config.PropertyConfigDto;
@@ -92,8 +91,8 @@ public class ConfigServiceImpl implements ConfigService {
             .findAvailableMinRatesByProperty(propertyId, startDate, endDate)
             .stream()
             .collect(Collectors.toMap(
-                CalendarDayDto::date,
-                CalendarDayDto::minNightlyRate
+                CalendarRateDto::date,
+                CalendarRateDto::minNightlyRate
             ));
 
         return IntStream.range(0, calendarDays)
