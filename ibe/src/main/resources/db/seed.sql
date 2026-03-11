@@ -1,17 +1,3 @@
--- ============================================================
--- SEED DATA — taj
--- UUID sequences continue from velocity-hotels:
---   tenant:              ...0002
---   properties:          ...0004–0006
---   landing_page_configs: ...0004–0006
---   guest_types:         ...0009–0016
---   room_types:          ...0008–0014
---   amenities:           ...0018–0034
---   room_type_amenities: b000...0002-XXXX-XXXXXXXXX
---   bookings:            ...0008–0014
--- ============================================================
-
--- ── Tenant ──────────────────────────────────────────────────
 INSERT INTO tenants (id, name, logo_url, banner_image_url, created_at, updated_at)
 VALUES (
     'a0000000-0000-0000-0000-000000000002',
