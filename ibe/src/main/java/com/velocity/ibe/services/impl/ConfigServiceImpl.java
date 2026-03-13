@@ -8,6 +8,7 @@ import com.velocity.ibe.dto.config.TenantConfigDto;
 import com.velocity.ibe.entities.GuestType;
 import com.velocity.ibe.entities.LandingPageConfig;
 import com.velocity.ibe.entities.Property;
+import com.velocity.ibe.entities.RoomRate;
 import com.velocity.ibe.entities.Tenant;
 import com.velocity.ibe.repositories.PropertyRepository;
 import com.velocity.ibe.repositories.RoomRateRepository;
@@ -56,29 +57,38 @@ public class ConfigServiceImpl implements ConfigService {
         Property property = propertyRepository
             .findWithConfigByPropertyId(propertyId)
             .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Config not found for propertyId: " + propertyId));
+                HttpStatus.NOT_FOUND,
+                "Config not found for propertyId: " + propertyId));
 
-        LandingPageConfig landingPageConfig = property.getLandingPageConfig();
+        LandingPageConfig landingPageConfig =
+            property.getLandingPageConfig();
 
         return new ConfigResponseDto(
             property.getId().toString(),
             property.getName(),
-            Boolean.TRUE.equals(landingPageConfig != null && landingPageConfig.getShowGuestsOption()),
-            Boolean.TRUE.equals(landingPageConfig != null && landingPageConfig.getShowRoomsOption()),
-            Boolean.TRUE.equals(landingPageConfig != null && landingPageConfig.getShowAccOption()),
+            Boolean.TRUE.equals(landingPageConfig != null
+                && landingPageConfig.getShowGuestsOption()),
+            Boolean.TRUE.equals(landingPageConfig != null
+                && landingPageConfig.getShowRoomsOption()),
+            Boolean.TRUE.equals(landingPageConfig != null
+                && landingPageConfig.getShowAccOption()),
             mapGuestTypes(property.getGuestTypes()),
             mapCalendar(propertyId)
         );
     }
 
-    private List<GuestTypeConfigDto> mapGuestTypes(List<GuestType> guestTypes) {
+    private List<GuestTypeConfigDto> mapGuestTypes(
+        List<GuestType> guestTypes) {
         return Optional.ofNullable(guestTypes)
             .orElse(List.of())
             .stream()
-            .sorted(Comparator.comparing(GuestType::getName, String.CASE_INSENSITIVE_ORDER))
+            .sorted(Comparator.comparing(
+                GuestType::getName,
+                String.CASE_INSENSITIVE_ORDER))
             .map(guestType -> new GuestTypeConfigDto(
                 guestType.getName(),
-                Optional.ofNullable(guestType.getMinAge()).orElse(0)
+                Optional.ofNullable(guestType.getMinAge())
+                    .orElse(0)
             ))
             .toList();
     }
@@ -86,19 +96,23 @@ public class ConfigServiceImpl implements ConfigService {
     private List<CalendarRateDto> mapCalendar(UUID propertyId) {
         LocalDate startDate = LocalDate.now(ZoneOffset.UTC);
         LocalDate endDate = startDate.plusDays(calendarDays - 1L);
-
         Map<LocalDate, BigDecimal> minRatesByDate = roomRateRepository
-            .findAvailableMinRatesByProperty(propertyId, startDate, endDate)
+            .findAvailableMinRatesByProperty(
+                propertyId, startDate, endDate)
             .stream()
             .collect(Collectors.toMap(
-                CalendarRateDto::date,
-                CalendarRateDto::minNightlyRate
+                RoomRate::getDate,
+                RoomRate::getPrice,
+                BigDecimal::min 
             ));
 
         return IntStream.range(0, calendarDays)
             .mapToObj(i -> {
                 LocalDate date = startDate.plusDays(i);
-                return new CalendarRateDto(date, minRatesByDate.get(date));
+                return new CalendarRateDto(
+                    date,
+                    minRatesByDate.get(date)
+                );
             })
             .toList();
     }
@@ -108,9 +122,11 @@ public class ConfigServiceImpl implements ConfigService {
         Tenant tenant = tenantRepository
             .findByNameWithProperties(tenantName)
             .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Tenant not found: " + tenantName));
+                HttpStatus.NOT_FOUND,
+                "Tenant not found: " + tenantName));
 
-        List<PropertyConfigDto> properties = tenant.getProperties().stream()
+        List<PropertyConfigDto> properties = tenant.getProperties()
+            .stream()
             .map(p -> new PropertyConfigDto(
                 p.getId(),
                 p.getName(),
