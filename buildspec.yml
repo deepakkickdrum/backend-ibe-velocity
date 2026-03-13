@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+
+  pre_build:
+    commands:
+      - echo "Moving to project directory"
+      - cd ibe
+      - echo "Java version:"
+      - java -version
+
+  build:
+    commands:
+      - echo "Building Spring Boot application"
+      - mvn clean package -DskipTests
+      - echo "Listing build output"
+      - ls -la target
+
+  post_build:
+    commands:
+      - echo "Preparing Elastic Beanstalk deployment bundle"
+      - mkdir -p deploy
+      - JAR_FILE=$(find target -maxdepth 1 -type f -name "*.jar" ! -name "*sources*" | head -n 1)
+      - test -n "$JAR_FILE" || { echo "No JAR file found in target"; exit 1; }
+      - echo "Packaging $JAR_FILE"
+      - cp "$JAR_FILE" deploy/application.jar
+      - cp Procfile deploy/Procfile
+      - ls -la deploy
+
+artifacts:
+  base-directory: ibe/deploy
+  files:
+    - "**/*"

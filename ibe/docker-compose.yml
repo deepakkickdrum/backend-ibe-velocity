@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: ibe-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ibe
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ibe_pgdata:/var/lib/postgresql/data
+
+volumes:
+  ibe_pgdata:
