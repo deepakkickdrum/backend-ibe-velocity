@@ -15,8 +15,9 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
     @Query("""
         SELECT p FROM Property p
         LEFT JOIN FETCH p.landingPageConfig
-        LEFT JOIN FETCH p.guestTypes
         WHERE p.id = :propertyId
     """)
-    Optional<Property> findWithConfigByPropertyId(@Param("propertyId") UUID propertyId);
+    Optional<Property> findWithConfigByPropertyId(
+        @Param("propertyId") UUID propertyId
+    );
 }
