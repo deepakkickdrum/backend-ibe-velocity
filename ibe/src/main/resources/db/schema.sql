@@ -114,32 +114,40 @@ CREATE TABLE IF NOT EXISTS room_inventory (
     UNIQUE (room_type_id, date)
 );
 
-CREATE TABLE IF NOT EXISTS property_type_packages (
+CREATE TABLE IF NOT EXISTS offers (
+    id               UUID PRIMARY KEY,
+    name             VARCHAR(100) NOT NULL,
+    description      TEXT NOT NULL,
+    offer_percentage DECIMAL(10, 2) NOT NULL CHECK ( offer_percentage >= 0),
+    is_active        BOOLEAN NOT NULL DEFAULT TRUE,
+    is_promocode     BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS property_offers (
     id               UUID PRIMARY KEY,
     property_id      UUID REFERENCES properties (id) ON DELETE CASCADE,
-    name             VARCHAR(100) NOT NULL,
-    description      TEXT NOT NULL,
-    offer_percentage DECIMAL(10, 2)NOT NULL,
-    is_active        BOOLEAN NOT NULL,
-    created_at       TIMESTAMP NOT NULL,
-    updated_at       TIMESTAMP NOT NULL
+    offer_id         UUID REFERENCES offers (id) ON DELETE CASCADE,
+    created_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(property_id, offer_id)
 );
-CREATE TABLE room_type_packages (
+
+CREATE TABLE IF NOT EXISTS room_type_offers (
     id               UUID PRIMARY KEY,
-    room_type_id     UUID REFERENCES room_types(id) ON DELETE CASCADE,
-    name             VARCHAR(100) NOT NULL,
-    description      TEXT NOT NULL,
-    offer_percentage DECIMAL(10, 2) NOT NULL,
-    is_active        BOOLEAN NOT NULL DEFAULT true,
-    created_at       TIMESTAMP NOT NULL,
-    updated_at       TIMESTAMP NOT NULL
+    room_type_id     UUID REFERENCES room_types (id) ON DELETE CASCADE,
+    offer_id         UUID REFERENCES offers (id) ON DELETE CASCADE,
+    created_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(room_type_id, offer_id)
 );
 CREATE TABLE IF NOT EXISTS filters (
-    id               UUID PRIMARY KEY,
-    filter_name      VARCHAR(50) NOT NULL,
-    type             VARCHAR(50) NOT NULL,
-    created_at       TIMESTAMP NOT NULL,
-    updated_at       TIMESTAMP NOT NULL
+    id          UUID PRIMARY KEY,
+    filter_name VARCHAR(100) NOT NULL,
+    type        VARCHAR(50) NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS filter_options (
