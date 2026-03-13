@@ -4,7 +4,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.util.UUID;
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,7 +15,7 @@ import lombok.Setter;
 @Table(name = "property_type_sort")
 @Getter
 @Setter
-public class PropertyTypeSort {
+public class PropertyTypeSort extends BaseEntity{
 
     @Id
     private UUID id;
@@ -27,11 +26,5 @@ public class PropertyTypeSort {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sort_options_id")
     private SortOption sortOption;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
 
 }

@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import java.util.UUID;
-import java.time.LocalDateTime;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,7 +16,7 @@ import jakarta.persistence.ManyToOne;
 @Table(name = "filter_options")
 @Getter
 @Setter
-public class FilterOption {
+public class FilterOption extends BaseEntity{
 
     @Id
     private UUID id;
@@ -28,11 +27,5 @@ public class FilterOption {
 
     @Column(nullable = false, length = 50)
     private String name;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
 
 }
