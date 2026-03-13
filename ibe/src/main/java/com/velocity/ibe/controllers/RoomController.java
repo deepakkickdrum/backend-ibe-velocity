@@ -1,10 +1,17 @@
 package com.velocity.ibe.controllers;
 
+import com.velocity.ibe.dto.rooms.RoomSearchRequest;
+import com.velocity.ibe.dto.rooms.RoomSearchResponse;
+import com.velocity.ibe.services.RoomService;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import com.velocity.ibe.dto.rooms.DealDto;
 import com.velocity.ibe.dto.rooms.RoomDetailResponseDto;
-import com.velocity.ibe.services.RoomModal;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -13,10 +20,16 @@ import java.util.UUID;
 @RequestMapping
 public class RoomController {
 
-    private final RoomModal roomService;
+    private final RoomService roomService;
 
-    public RoomController(RoomModal roomService) {
+    public RoomController(RoomService roomService) {
         this.roomService = roomService;
+    }
+
+    @GetMapping("/{tenantName}/properties/{propertyId}/rooms")
+    public ResponseEntity<RoomSearchResponse> searchRooms(@PathVariable String tenantName,
+            @PathVariable UUID propertyId, @Valid RoomSearchRequest request) {
+        return ResponseEntity.ok(roomService.searchRooms(propertyId, request));
     }
 
     @GetMapping("/{tenantName}/properties/{propertyId}/rooms/{roomTypeId}")

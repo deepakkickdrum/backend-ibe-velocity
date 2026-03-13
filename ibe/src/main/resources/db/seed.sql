@@ -540,6 +540,81 @@ CROSS JOIN generate_series(0, 89) AS s(i);
 -- ── Bookings ──────────────────────────────────────────────────
 INSERT INTO bookings (id, property_id, room_type_id, check_in, check_out, total_price, status, created_at, updated_at)
 VALUES
+<<<<<<< HEAD
+    -- Downtown — confirmed
+    ('a0000000-0000-0000-0009-000000000008',
+     'b0000000-0000-0000-0000-000000000004',
+     'f0000000-0000-0000-0000-000000000008',
+     CURRENT_DATE +  3, CURRENT_DATE +  6,
+     809.97, 'CONFIRMED', NOW(), NOW()),
+    ('a0000000-0000-0000-0009-000000000009',
+     'b0000000-0000-0000-0000-000000000004',
+     'f0000000-0000-0000-0000-000000000009',
+     CURRENT_DATE +  8, CURRENT_DATE + 11,
+     509.97, 'CONFIRMED', NOW(), NOW()),
+    ('a0000000-0000-0000-0009-000000000010',
+     'b0000000-0000-0000-0000-000000000004',
+     'f0000000-0000-0000-0000-000000000010',
+     CURRENT_DATE + 15, CURRENT_DATE + 18,
+     449.97, 'CONFIRMED', NOW(), NOW()),
+    -- Airport
+    ('a0000000-0000-0000-0009-000000000011',
+     'b0000000-0000-0000-0000-000000000005',
+     'f0000000-0000-0000-0000-000000000011',
+     CURRENT_DATE +  1, CURRENT_DATE +  3,
+     399.98, 'PENDING', NOW(), NOW()),
+    ('a0000000-0000-0000-0009-000000000012',
+     'b0000000-0000-0000-0000-000000000005',
+     'f0000000-0000-0000-0000-000000000012',
+     CURRENT_DATE +  6, CURRENT_DATE +  9,
+     389.97, 'CONFIRMED', NOW(), NOW()),
+    -- Beach
+    ('a0000000-0000-0000-0009-000000000013',
+     'b0000000-0000-0000-0000-000000000006',
+     'f0000000-0000-0000-0000-000000000013',
+     CURRENT_DATE + 12, CURRENT_DATE + 19,
+     3149.93, 'CONFIRMED', NOW(), NOW()),
+    ('a0000000-0000-0000-0009-000000000014',
+     'b0000000-0000-0000-0000-000000000006',
+     'f0000000-0000-0000-0000-000000000014',
+     CURRENT_DATE +  4, CURRENT_DATE +  7,
+     899.97, 'CANCELLED', NOW(), NOW());
+
+-- offers (all packages migrated here)
+INSERT INTO offers (id, name, description, offer_percentage, is_active, is_promocode, created_at, updated_at)
+VALUES
+    ('of000000-0000-0000-0000-000000000001', 'Early Bird',              'Book 30 days in advance and save on any room at Taj Downtown.',              10.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000002', 'Executive Weekend Escape','Exclusive 15% off the Taj Executive King room on Friday and Saturday stays.',15.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000003', 'Senior Citizen Discount', 'Flat 20% off for guests over 60 years age.',                                 20.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000004', 'Long Stay Discount',      'Stay 7 or more nights at Taj Beach Resort and get 25% off.',                 25.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000005', 'Sea View Weekend',        'Book the Sea View Queen on weekends and enjoy 10% off.',                     10.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000006', 'Business Pro Member Rate','Exclusive discount for registered business travellers.',                     15.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000007', 'Honeymoon Special',       'Includes sparkling wine and 20% off for newly-weds.',                        20.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000008', 'Quick Layover',           'Special discounted rate for stays under 12 hours.',                          10.00, TRUE, FALSE, NOW(), NOW()),
+    -- one promocode offer to verify it is excluded from display price
+    ('of000000-0000-0000-0000-000000000009', 'WELCOME20',               'New user promo code for 20% off.',                                           20.00, TRUE, TRUE,  NOW(), NOW());
+-- property_offers (property-wide offers)
+INSERT INTO property_offers (id, property_id, offer_id, created_at, updated_at)
+VALUES
+    ('po000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000002', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000005', 'of000000-0000-0000-0000-000000000003', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000006', 'of000000-0000-0000-0000-000000000004', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000006', 'of000000-0000-0000-0000-000000000005', NOW(), NOW()),
+    -- attach promocode to downtown to verify it does NOT affect display price
+    ('po000000-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000009', NOW(), NOW());
+
+-- room_type_offers (room-type specific offers)
+INSERT INTO room_type_offers (id, room_type_id, offer_id, created_at, updated_at)
+VALUES
+    ('ro000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000008', 'of000000-0000-0000-0000-000000000006', NOW(), NOW()),
+    ('ro000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000013', 'of000000-0000-0000-0000-000000000007', NOW(), NOW()),
+    ('ro000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000012', 'of000000-0000-0000-0000-000000000008', NOW(), NOW());
+```
+
+
+-- ── Filters ─────────────────────────────────
+=======
 --     -- Velocity Downtown
     ('b9000000-0000-0000-0000-000000000001','b0000000-0000-0000-0000-000000000001','f0000000-0000-0000-0000-000000000001',CURRENT_DATE+3, CURRENT_DATE+6,  569.97,'CONFIRMED',NOW(),NOW()),
     ('b9000000-0000-0000-0000-000000000002','b0000000-0000-0000-0000-000000000001','f0000000-0000-0000-0000-000000000002',CURRENT_DATE+5, CURRENT_DATE+8,  389.97,'CONFIRMED',NOW(),NOW()),
@@ -780,6 +855,7 @@ VALUES
 
 
 -- ── Filters ───────────────────────────────────────────────────
+>>>>>>> origin/feature/velibe-32-entity-jpa
 INSERT INTO filters (id, filter_name, type, created_at, updated_at)
 VALUES
     ('f1000000-0000-0000-0000-000000000001', 'Bed Type',    'single_select', NOW(), NOW()),
