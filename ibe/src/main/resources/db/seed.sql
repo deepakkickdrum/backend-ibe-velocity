@@ -294,58 +294,39 @@ VALUES
      CURRENT_DATE +  4, CURRENT_DATE +  7,
      899.97, 'CANCELLED', NOW(), NOW());
 
--- ── Packages ────────────────────────────────────────────────
-
-INSERT INTO property_type_packages (id, property_id, name, description, offer_percentage, is_active, created_at, updated_at)
+-- offers (all packages migrated here)
+INSERT INTO offers (id, name, description, offer_percentage, is_active, is_promocode, created_at, updated_at)
 VALUES
-    -- Downtown — property-wide
-    ('aa000000-0000-0000-0000-000000000001',
-     'b0000000-0000-0000-0000-000000000004',
-     'Early Bird',
-     'Book 30 days in advance and save on any room at Taj Downtown.',
-     10.00, TRUE, NOW(), NOW()),
-
-    ('aa000000-0000-0000-0000-000000000002',
-     'b0000000-0000-0000-0000-000000000004',
-     'Executive Weekend Escape',
-     'Exclusive 15% off the Taj Executive King room on Friday and Saturday stays.',
-     15.00, TRUE, NOW(), NOW()),
-
-    --  taj -airport
-    ('aa000000-0000-0000-0000-000000000003',
-     'b0000000-0000-0000-0000-000000000005',
-     'Senior Citizen Discount',
-     'Flat 20% off for guests over 60 years age',
-     20.00, TRUE, NOW(), NOW()),
-
-
-    -- Beach — property-wide
-    ('aa000000-0000-0000-0000-000000000004',
-     'b0000000-0000-0000-0000-000000000006',
-     'Long Stay Discount',
-     'Stay 7 or more nights at Taj Beach Resort and get 25% off your entire booking.',
-     25.00, TRUE, NOW(), NOW()),
-
-    ('aa000000-0000-0000-0000-000000000005',
-     'b0000000-0000-0000-0000-000000000006',
-     'Sea View Weekend',
-     'Book the Sea View Queen on weekends and enjoy 10% off.',
-     10.00, TRUE, NOW(), NOW());
-
--- ── Room Type Packages ──────────────────────
-INSERT INTO room_type_packages (id, room_type_id, name, description, offer_percentage, is_active, created_at, updated_at)
+    ('of000000-0000-0000-0000-000000000001', 'Early Bird',              'Book 30 days in advance and save on any room at Taj Downtown.',              10.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000002', 'Executive Weekend Escape','Exclusive 15% off the Taj Executive King room on Friday and Saturday stays.',15.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000003', 'Senior Citizen Discount', 'Flat 20% off for guests over 60 years age.',                                 20.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000004', 'Long Stay Discount',      'Stay 7 or more nights at Taj Beach Resort and get 25% off.',                 25.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000005', 'Sea View Weekend',        'Book the Sea View Queen on weekends and enjoy 10% off.',                     10.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000006', 'Business Pro Member Rate','Exclusive discount for registered business travellers.',                     15.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000007', 'Honeymoon Special',       'Includes sparkling wine and 20% off for newly-weds.',                        20.00, TRUE, FALSE, NOW(), NOW()),
+    ('of000000-0000-0000-0000-000000000008', 'Quick Layover',           'Special discounted rate for stays under 12 hours.',                          10.00, TRUE, FALSE, NOW(), NOW()),
+    -- one promocode offer to verify it is excluded from display price
+    ('of000000-0000-0000-0000-000000000009', 'WELCOME20',               'New user promo code for 20% off.',                                           20.00, TRUE, TRUE,  NOW(), NOW());
+-- property_offers (property-wide offers)
+INSERT INTO property_offers (id, property_id, offer_id, created_at, updated_at)
 VALUES
-    -- Taj Executive King (Downtown) - 15% off for Business Pro members
-    ('ba000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000008', 
-     'Business Pro Member Rate', 'Exclusive discount for registered business travellers.', 15.00, TRUE, NOW(), NOW()),
-    
-    -- Taj Oceanfront King Suite (Beach) - 20% Honeymoon Special
-    ('ba000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000013', 
-     'Honeymoon Special', 'Includes sparkling wine and 20% off for newly-weds.', 20.00, TRUE, NOW(), NOW()),
-     
-    -- Taj Airport Double (Airport) - 10% Layover Deal
-    ('ba000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000012', 
-     'Quick Layover', 'Special discounted rate for stays under 12 hours.', 10.00, TRUE, NOW(), NOW());
+    ('po000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000002', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000005', 'of000000-0000-0000-0000-000000000003', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000006', 'of000000-0000-0000-0000-000000000004', NOW(), NOW()),
+    ('po000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000006', 'of000000-0000-0000-0000-000000000005', NOW(), NOW()),
+    -- attach promocode to downtown to verify it does NOT affect display price
+    ('po000000-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000009', NOW(), NOW());
+
+-- room_type_offers (room-type specific offers)
+INSERT INTO room_type_offers (id, room_type_id, offer_id, created_at, updated_at)
+VALUES
+    ('ro000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000008', 'of000000-0000-0000-0000-000000000006', NOW(), NOW()),
+    ('ro000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000013', 'of000000-0000-0000-0000-000000000007', NOW(), NOW()),
+    ('ro000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000012', 'of000000-0000-0000-0000-000000000008', NOW(), NOW());
+```
+
+
 -- ── Filters ─────────────────────────────────
 INSERT INTO filters (id, filter_name, type, created_at, updated_at)
 VALUES
