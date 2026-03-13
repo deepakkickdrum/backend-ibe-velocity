@@ -99,6 +99,14 @@ VALUES
     ('e0000000-0000-0000-0000-000000000004', 'Double', NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
+-- ── Room Types ────────────────────────────────────────────────
+-- Velocity Downtown  → 6 room types  (f001–f006)
+-- Velocity Suburbs   → 5 room types  (f015–f019)
+-- Velocity Airport   → 4 room types  (f020–f023)
+-- Taj Downtown       → 6 room types  (f008–f010 + f024–f026)
+-- Taj Airport        → 5 room types  (f011–f012 + f027–f029)
+-- Taj Beach          → 5 room types  (f013–f014 + f030–f032)
+
 INSERT INTO room_types (id, property_id, bed_type_id, title, description, size_sqft, max_occupancy, images, created_at, updated_at)
 VALUES
 -- ── Velocity Downtown ────────────────────────────────────────
@@ -533,193 +541,6 @@ CROSS JOIN generate_series(0, 89) AS s(i);
 -- ── Bookings ──────────────────────────────────────────────────
 INSERT INTO bookings (id, property_id, room_type_id, check_in, check_out, total_price, status, created_at, updated_at)
 VALUES
-<<<<<<< HEAD
-    -- Downtown — confirmed
-    ('a0000000-0000-0000-0009-000000000008',
-     'b0000000-0000-0000-0000-000000000004',
-     'f0000000-0000-0000-0000-000000000008',
-     CURRENT_DATE +  3, CURRENT_DATE +  6,
-     809.97, 'CONFIRMED', NOW(), NOW()),
-    ('a0000000-0000-0000-0009-000000000009',
-     'b0000000-0000-0000-0000-000000000004',
-     'f0000000-0000-0000-0000-000000000009',
-     CURRENT_DATE +  8, CURRENT_DATE + 11,
-     509.97, 'CONFIRMED', NOW(), NOW()),
-    ('a0000000-0000-0000-0009-000000000010',
-     'b0000000-0000-0000-0000-000000000004',
-     'f0000000-0000-0000-0000-000000000010',
-     CURRENT_DATE + 15, CURRENT_DATE + 18,
-     449.97, 'CONFIRMED', NOW(), NOW()),
-    -- Airport
-    ('a0000000-0000-0000-0009-000000000011',
-     'b0000000-0000-0000-0000-000000000005',
-     'f0000000-0000-0000-0000-000000000011',
-     CURRENT_DATE +  1, CURRENT_DATE +  3,
-     399.98, 'PENDING', NOW(), NOW()),
-    ('a0000000-0000-0000-0009-000000000012',
-     'b0000000-0000-0000-0000-000000000005',
-     'f0000000-0000-0000-0000-000000000012',
-     CURRENT_DATE +  6, CURRENT_DATE +  9,
-     389.97, 'CONFIRMED', NOW(), NOW()),
-    -- Beach
-    ('a0000000-0000-0000-0009-000000000013',
-     'b0000000-0000-0000-0000-000000000006',
-     'f0000000-0000-0000-0000-000000000013',
-     CURRENT_DATE + 12, CURRENT_DATE + 19,
-     3149.93, 'CONFIRMED', NOW(), NOW()),
-    ('a0000000-0000-0000-0009-000000000014',
-     'b0000000-0000-0000-0000-000000000006',
-     'f0000000-0000-0000-0000-000000000014',
-     CURRENT_DATE +  4, CURRENT_DATE +  7,
-     899.97, 'CANCELLED', NOW(), NOW());
-
-<<<<<<< HEAD
--- ── Packages ────────────────────────────────────────────────
-
-INSERT INTO property_type_packages (id, property_id, name, description, offer_percentage, is_active, created_at, updated_at)
-VALUES
-    -- Downtown — property-wide
-    ('aa000000-0000-0000-0000-000000000001',
-     'b0000000-0000-0000-0000-000000000004',
-     'Early Bird',
-     'Book 30 days in advance and save on any room at Taj Downtown.',
-     10.00, TRUE, NOW(), NOW()),
-
-    ('aa000000-0000-0000-0000-000000000002',
-     'b0000000-0000-0000-0000-000000000004',
-     'Executive Weekend Escape',
-     'Exclusive 15% off the Taj Executive King room on Friday and Saturday stays.',
-     15.00, TRUE, NOW(), NOW()),
-
-    --  taj -airport
-    ('aa000000-0000-0000-0000-000000000003',
-     'b0000000-0000-0000-0000-000000000005',
-     'Senior Citizen Discount',
-     'Flat 20% off for guests over 60 years age',
-     20.00, TRUE, NOW(), NOW()),
-
-
-    -- Beach — property-wide
-    ('aa000000-0000-0000-0000-000000000004',
-     'b0000000-0000-0000-0000-000000000006',
-     'Long Stay Discount',
-     'Stay 7 or more nights at Taj Beach Resort and get 25% off your entire booking.',
-     25.00, TRUE, NOW(), NOW()),
-
-    ('aa000000-0000-0000-0000-000000000005',
-     'b0000000-0000-0000-0000-000000000006',
-     'Sea View Weekend',
-     'Book the Sea View Queen on weekends and enjoy 10% off.',
-     10.00, TRUE, NOW(), NOW());
-
--- ── Room Type Packages ──────────────────────
-INSERT INTO room_type_packages (id, room_type_id, name, description, offer_percentage, is_active, created_at, updated_at)
-VALUES
-    -- Taj Executive King (Downtown) - 15% off for Business Pro members
-    ('ba000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000008', 
-     'Business Pro Member Rate', 'Exclusive discount for registered business travellers.', 15.00, TRUE, NOW(), NOW()),
-    
-    -- Taj Oceanfront King Suite (Beach) - 20% Honeymoon Special
-    ('ba000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000013', 
-     'Honeymoon Special', 'Includes sparkling wine and 20% off for newly-weds.', 20.00, TRUE, NOW(), NOW()),
-     
-    -- Taj Airport Double (Airport) - 10% Layover Deal
-    ('ba000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000012', 
-     'Quick Layover', 'Special discounted rate for stays under 12 hours.', 10.00, TRUE, NOW(), NOW());
--- ── Filters ─────────────────────────────────
-INSERT INTO filters (id, filter_name, type, created_at, updated_at)
-VALUES
-    ('f0000000-0000-0000-0000-000000000001', 'Bed Type',    'single_select', NOW(), NOW()),
-    ('f0000000-0000-0000-0000-000000000002', 'Amenities',   'multi_select',  NOW(), NOW()),
-    ('f0000000-0000-0000-0000-000000000003', 'Room Size',   'range',         NOW(), NOW()),
-    ('f0000000-0000-0000-0000-000000000004', 'Price Range', 'range',         NOW(), NOW()),
-    ('f0000000-0000-0000-0000-000000000005', 'Occupancy',   'range', NOW(), NOW());
-
--- ── Filter Options───────────────────────────
-INSERT INTO filter_options (id, filter_id, name, created_at, updated_at)
-VALUES
-    -- Bed Type options
-    ('ff000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001', 'King',    NOW(), NOW()),
-    ('ff000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000001', 'Queen',   NOW(), NOW()),
-    ('ff000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000001', 'Twin',    NOW(), NOW()),
-    ('ff000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000001', 'Double',  NOW(), NOW());
-
--- ── Property Type Filters───────────────────
-INSERT INTO property_type_filters (id, property_id, filter_id, created_at, updated_at)
-VALUES
-    -- Downtown
-    ('af000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000001', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000002', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000003', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000004', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000005', NOW(), NOW()),
-    -- Airport
-    ('af000000-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000001', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000007', 'b0000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000002', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000009', 'b0000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000004', NOW(), NOW()),
-    -- Beach
-    ('af000000-0000-0000-0000-000000000011', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000001', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000012', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000002', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000013', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000003', NOW(), NOW()),
-    ('af000000-0000-0000-0000-000000000014', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000004', NOW(), NOW());
-
--- ── Sort Options  ────────────────────────────
-INSERT INTO sort_options (id, name, default_order, created_at, updated_at)
-VALUES
-    ('e0000000-0000-0000-0000-000000000001', 'price', 'asc',  NOW(), NOW()),
-    ('e0000000-0000-0000-0000-000000000002', 'size_sqft', 'asc', NOW(), NOW()),
-    ('e0000000-0000-0000-0000-000000000003', 'max_occupancy', 'desc', NOW(), NOW());
-
--- ── Property Type Sort ──────────────────────
-INSERT INTO property_type_sort (id, property_id, sort_options_id, created_at, updated_at)
-VALUES
-    -- Downtown
-    ('ae000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000001', NOW(), NOW()),
-    ('ae000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000002', NOW(), NOW()),
-    ('ae000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000003', NOW(), NOW()),
-    -- Airport
-    ('ae000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000005', 'e0000000-0000-0000-0000-000000000001', NOW(), NOW()),
-    ('ae000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000005', 'e0000000-0000-0000-0000-000000000002', NOW(), NOW()),
-    ('ae000000-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-000000000005', 'e0000000-0000-0000-0000-000000000003', NOW(), NOW()),
-    -- Beach
-    ('ae000000-0000-0000-0000-000000000007', 'b0000000-0000-0000-0000-000000000006', 'e0000000-0000-0000-0000-000000000001', NOW(), NOW()),
-    ('ae000000-0000-0000-0000-000000000008', 'b0000000-0000-0000-0000-000000000006', 'e0000000-0000-0000-0000-000000000002', NOW(), NOW());
-=======
--- offers (all packages migrated here)
-INSERT INTO offers (id, name, description, offer_percentage, is_active, is_promocode, created_at, updated_at)
-VALUES
-    ('of000000-0000-0000-0000-000000000001', 'Early Bird',              'Book 30 days in advance and save on any room at Taj Downtown.',              10.00, TRUE, FALSE, NOW(), NOW()),
-    ('of000000-0000-0000-0000-000000000002', 'Executive Weekend Escape','Exclusive 15% off the Taj Executive King room on Friday and Saturday stays.',15.00, TRUE, FALSE, NOW(), NOW()),
-    ('of000000-0000-0000-0000-000000000003', 'Senior Citizen Discount', 'Flat 20% off for guests over 60 years age.',                                 20.00, TRUE, FALSE, NOW(), NOW()),
-    ('of000000-0000-0000-0000-000000000004', 'Long Stay Discount',      'Stay 7 or more nights at Taj Beach Resort and get 25% off.',                 25.00, TRUE, FALSE, NOW(), NOW()),
-    ('of000000-0000-0000-0000-000000000005', 'Sea View Weekend',        'Book the Sea View Queen on weekends and enjoy 10% off.',                     10.00, TRUE, FALSE, NOW(), NOW()),
-    ('of000000-0000-0000-0000-000000000006', 'Business Pro Member Rate','Exclusive discount for registered business travellers.',                     15.00, TRUE, FALSE, NOW(), NOW()),
-    ('of000000-0000-0000-0000-000000000007', 'Honeymoon Special',       'Includes sparkling wine and 20% off for newly-weds.',                        20.00, TRUE, FALSE, NOW(), NOW()),
-    ('of000000-0000-0000-0000-000000000008', 'Quick Layover',           'Special discounted rate for stays under 12 hours.',                          10.00, TRUE, FALSE, NOW(), NOW()),
-    -- one promocode offer to verify it is excluded from display price
-    ('of000000-0000-0000-0000-000000000009', 'WELCOME20',               'New user promo code for 20% off.',                                           20.00, TRUE, TRUE,  NOW(), NOW());
--- property_offers (property-wide offers)
-INSERT INTO property_offers (id, property_id, offer_id, created_at, updated_at)
-VALUES
-    ('po000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000001', NOW(), NOW()),
-    ('po000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000002', NOW(), NOW()),
-    ('po000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000005', 'of000000-0000-0000-0000-000000000003', NOW(), NOW()),
-    ('po000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000006', 'of000000-0000-0000-0000-000000000004', NOW(), NOW()),
-    ('po000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000006', 'of000000-0000-0000-0000-000000000005', NOW(), NOW()),
-    -- attach promocode to downtown to verify it does NOT affect display price
-    ('po000000-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-000000000004', 'of000000-0000-0000-0000-000000000009', NOW(), NOW());
-
--- room_type_offers (room-type specific offers)
-INSERT INTO room_type_offers (id, room_type_id, offer_id, created_at, updated_at)
-VALUES
-    ('ro000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000008', 'of000000-0000-0000-0000-000000000006', NOW(), NOW()),
-    ('ro000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000013', 'of000000-0000-0000-0000-000000000007', NOW(), NOW()),
-    ('ro000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000012', 'of000000-0000-0000-0000-000000000008', NOW(), NOW());
-```
-
-
--- ── Filters ─────────────────────────────────
-=======
 --     -- Velocity Downtown
     ('b9000000-0000-0000-0000-000000000001','b0000000-0000-0000-0000-000000000001','f0000000-0000-0000-0000-000000000001',CURRENT_DATE+3, CURRENT_DATE+6,  569.97,'CONFIRMED',NOW(),NOW()),
     ('b9000000-0000-0000-0000-000000000002','b0000000-0000-0000-0000-000000000001','f0000000-0000-0000-0000-000000000002',CURRENT_DATE+5, CURRENT_DATE+8,  389.97,'CONFIRMED',NOW(),NOW()),
@@ -960,7 +781,6 @@ VALUES
 
 
 -- ── Filters ───────────────────────────────────────────────────
->>>>>>> origin/feature/velibe-32-entity-jpa
 INSERT INTO filters (id, filter_name, type, created_at, updated_at)
 VALUES
     ('f1000000-0000-0000-0000-000000000001', 'Bed Type',    'single_select', NOW(), NOW()),
@@ -1268,4 +1088,114 @@ VALUES
     ('b0000006-0000-0000-0032-000000000001', 'f0000000-0000-0000-0000-000000000032', 'a0000006-0000-0000-0000-000000000001', NOW(), NOW()),
     ('b0000006-0000-0000-0032-000000000002', 'f0000000-0000-0000-0000-000000000032', 'a0000006-0000-0000-0000-000000000004', NOW(), NOW()),
     ('b0000006-0000-0000-0032-000000000003', 'f0000000-0000-0000-0000-000000000032', 'a0000006-0000-0000-0000-000000000005', NOW(), NOW());
->>>>>>> origin/testing
+
+-- ── Packages ────────────────────────────────────────────────
+
+INSERT INTO property_type_packages (id, property_id, name, description, offer_percentage, is_active, created_at, updated_at)
+VALUES
+    -- Downtown — property-wide
+    ('aa000000-0000-0000-0000-000000000001',
+     'b0000000-0000-0000-0000-000000000004',
+     'Early Bird',
+     'Book 30 days in advance and save on any room at Taj Downtown.',
+     10.00, TRUE, NOW(), NOW()),
+
+    ('aa000000-0000-0000-0000-000000000002',
+     'b0000000-0000-0000-0000-000000000004',
+     'Executive Weekend Escape',
+     'Exclusive 15% off the Taj Executive King room on Friday and Saturday stays.',
+     15.00, TRUE, NOW(), NOW()),
+
+    --  taj -airport
+    ('aa000000-0000-0000-0000-000000000003',
+     'b0000000-0000-0000-0000-000000000005',
+     'Senior Citizen Discount',
+     'Flat 20% off for guests over 60 years age',
+     20.00, TRUE, NOW(), NOW()),
+
+
+    -- Beach — property-wide
+    ('aa000000-0000-0000-0000-000000000004',
+     'b0000000-0000-0000-0000-000000000006',
+     'Long Stay Discount',
+     'Stay 7 or more nights at Taj Beach Resort and get 25% off your entire booking.',
+     25.00, TRUE, NOW(), NOW()),
+
+    ('aa000000-0000-0000-0000-000000000005',
+     'b0000000-0000-0000-0000-000000000006',
+     'Sea View Weekend',
+     'Book the Sea View Queen on weekends and enjoy 10% off.',
+     10.00, TRUE, NOW(), NOW());
+
+-- ── Room Type Packages ──────────────────────
+INSERT INTO room_type_packages (id, room_type_id, name, description, offer_percentage, is_active, created_at, updated_at)
+VALUES
+    -- Taj Executive King (Downtown) - 15% off for Business Pro members
+    ('ba000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000008', 
+     'Business Pro Member Rate', 'Exclusive discount for registered business travellers.', 15.00, TRUE, NOW(), NOW()),
+    
+    -- Taj Oceanfront King Suite (Beach) - 20% Honeymoon Special
+    ('ba000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000013', 
+     'Honeymoon Special', 'Includes sparkling wine and 20% off for newly-weds.', 20.00, TRUE, NOW(), NOW()),
+     
+    -- Taj Airport Double (Airport) - 10% Layover Deal
+    ('ba000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000012', 
+     'Quick Layover', 'Special discounted rate for stays under 12 hours.', 10.00, TRUE, NOW(), NOW());
+-- ── Filters ─────────────────────────────────
+INSERT INTO filters (id, filter_name, type, created_at, updated_at)
+VALUES
+    ('f0000000-0000-0000-0000-000000000001', 'Bed Type',    'single_select', NOW(), NOW()),
+    ('f0000000-0000-0000-0000-000000000002', 'Amenities',   'multi_select',  NOW(), NOW()),
+    ('f0000000-0000-0000-0000-000000000003', 'Room Size',   'range',         NOW(), NOW()),
+    ('f0000000-0000-0000-0000-000000000004', 'Price Range', 'range',         NOW(), NOW()),
+    ('f0000000-0000-0000-0000-000000000005', 'Occupancy',   'range', NOW(), NOW());
+
+-- ── Filter Options───────────────────────────
+INSERT INTO filter_options (id, filter_id, name, created_at, updated_at)
+VALUES
+    -- Bed Type options
+    ('ff000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000001', 'King',    NOW(), NOW()),
+    ('ff000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000001', 'Queen',   NOW(), NOW()),
+    ('ff000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000001', 'Twin',    NOW(), NOW()),
+    ('ff000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000001', 'Double',  NOW(), NOW());
+
+-- ── Property Type Filters───────────────────
+INSERT INTO property_type_filters (id, property_id, filter_id, created_at, updated_at)
+VALUES
+    -- Downtown
+    ('af000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000002', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000003', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000004', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000004', 'f0000000-0000-0000-0000-000000000005', NOW(), NOW()),
+    -- Airport
+    ('af000000-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000007', 'b0000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000002', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000009', 'b0000000-0000-0000-0000-000000000005', 'f0000000-0000-0000-0000-000000000004', NOW(), NOW()),
+    -- Beach
+    ('af000000-0000-0000-0000-000000000011', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000012', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000002', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000013', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000003', NOW(), NOW()),
+    ('af000000-0000-0000-0000-000000000014', 'b0000000-0000-0000-0000-000000000006', 'f0000000-0000-0000-0000-000000000004', NOW(), NOW());
+
+-- ── Sort Options  ────────────────────────────
+INSERT INTO sort_options (id, name, default_order, created_at, updated_at)
+VALUES
+    ('e0000000-0000-0000-0000-000000000001', 'price', 'asc',  NOW(), NOW()),
+    ('e0000000-0000-0000-0000-000000000002', 'size_sqft', 'asc', NOW(), NOW()),
+    ('e0000000-0000-0000-0000-000000000003', 'max_occupancy', 'desc', NOW(), NOW());
+
+-- ── Property Type Sort ──────────────────────
+INSERT INTO property_type_sort (id, property_id, sort_options_id, created_at, updated_at)
+VALUES
+    -- Downtown
+    ('ae000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('ae000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000002', NOW(), NOW()),
+    ('ae000000-0000-0000-0000-000000000003', 'b0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000003', NOW(), NOW()),
+    -- Airport
+    ('ae000000-0000-0000-0000-000000000004', 'b0000000-0000-0000-0000-000000000005', 'e0000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('ae000000-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-000000000005', 'e0000000-0000-0000-0000-000000000002', NOW(), NOW()),
+    ('ae000000-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-000000000005', 'e0000000-0000-0000-0000-000000000003', NOW(), NOW()),
+    -- Beach
+    ('ae000000-0000-0000-0000-000000000007', 'b0000000-0000-0000-0000-000000000006', 'e0000000-0000-0000-0000-000000000001', NOW(), NOW()),
+    ('ae000000-0000-0000-0000-000000000008', 'b0000000-0000-0000-0000-000000000006', 'e0000000-0000-0000-0000-000000000002', NOW(), NOW());
