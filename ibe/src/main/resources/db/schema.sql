@@ -142,6 +142,13 @@ CREATE TABLE IF NOT EXISTS room_type_offers (
     updated_at       TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE(room_type_id, offer_id)
 );
+CREATE TABLE IF NOT EXISTS filters (
+    id          UUID PRIMARY KEY,
+    filter_name VARCHAR(100) NOT NULL,
+    type        VARCHAR(50) NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS filter_options (
     id               UUID PRIMARY KEY,
