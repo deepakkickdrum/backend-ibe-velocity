@@ -19,11 +19,17 @@ public class Property extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "max_occupancy")
-    private Integer maxOccupancy;
-
     @Column(name = "max_booking_rooms")
     private Integer maxBookingRooms;
+
+    @Column(name = "max_guests_per_room")
+    private Integer maxGuestsPerRoom;
+
+    @Column(name = "min_stay", nullable = false)
+    private Integer minStay;
+
+    @Column(name = "max_stay", nullable = false)
+    private Integer maxStay;
 
     @Column(name = "banner_image_url")
     private String bannerImageUrl;

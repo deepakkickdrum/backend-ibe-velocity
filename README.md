@@ -5,7 +5,7 @@ IBE VELOCITY BACKEND
 use
 
 ```
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments="-Duser.timezone=UTC"
 ```
 
 with the .env file placed in root

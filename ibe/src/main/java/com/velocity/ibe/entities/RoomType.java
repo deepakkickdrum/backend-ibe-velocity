@@ -40,11 +40,6 @@ public class RoomType extends BaseEntity {
     @Column(columnDefinition = "jsonb")
     private List<Map<String, String>> images;
 
-    @ManyToMany
-    @JoinTable(
-        name = "room_type_amenity",
-        joinColumns = @JoinColumn(name = "room_type_id"),
-        inverseJoinColumns = @JoinColumn(name = "amenity_id")
-    )
-    private List<Amenity> amenities;
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoomTypeAmenity> amenities;
 }
