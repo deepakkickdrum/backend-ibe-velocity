@@ -88,10 +88,9 @@ public class RoomServiceImpl implements RoomService {
             }
             room.put("rooms_needed", roomsNeeded);
             room.put("is_exact_match", roomsNeeded <= req.getRooms());
-            BigDecimal basePrice = (BigDecimal) room.get("base_total_price");
-            UUID roomTypeId = (UUID) room.get("id");
-            List<Map<String, Object>> roomTypeOffers = roomSearchRepository.getRoomTypeOffers(roomTypeId);
-            room.put("display_price", price.calculateDisplayPrice(basePrice, propertyOffers, roomTypeOffers));
+            BigDecimal displayPricePerRoom = (BigDecimal) room.get("display_price_per_room");
+            int roomsToPrice = (roomsNeeded <= req.getRooms()) ? req.getRooms() : roomsNeeded;
+            room.put("display_price", displayPricePerRoom.multiply(BigDecimal.valueOf(roomsToPrice)));
         }
 
         //pagination

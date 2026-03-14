@@ -29,33 +29,65 @@ public class RoomSearchRepository {
     //search rooms
     public List<Map<String, Object>> searchRooms(UUID propertyId, RoomSearchRequest req) {
         StringBuilder sql = new StringBuilder("""
-                SELECT
-                    rt.id,
-                    rt.title,
-                    rt.size_sqft,
-                    rt.max_occupancy,
-                    rt.images,
-                    bt.name AS bed_type,
-                    inv.min_available_rooms,
-                    rates.base_total_price,
-                    rates.base_price_per_night
-                FROM room_types rt
-                JOIN bed_types bt
-                    ON bt.id = rt.bed_type_id
-                JOIN (
-                    SELECT room_type_id, MIN(available_rooms) AS min_available_rooms, COUNT(date) as days_covered
-                    FROM room_inventory
-                    WHERE date >= :checkIn AND date <  :checkOut
-                    GROUP BY room_type_id
-                ) inv ON inv.room_type_id = rt.id
-                JOIN (
-                    SELECT room_type_id,SUM(price) AS base_total_price, min(price) as base_price_per_night
-                    FROM room_rates
-                    WHERE date >= :checkIn AND date < :checkOut
-                    GROUP BY room_type_id
-                ) rates ON rates.room_type_id = rt.id
-                WHERE rt.property_id = :propertyId AND inv.min_available_rooms >= :rooms AND inv.days_covered = :numNights
-                """);
+        SELECT
+            rt.id,
+            rt.title,
+            rt.size_sqft,
+            rt.max_occupancy,
+            rt.images,
+            bt.name                    AS bed_type,
+            inv.min_available_rooms,
+            rates.base_total_price,
+            rates.base_price_per_night,
+            COALESCE((
+                SELECT MAX(o.offer_percentage)
+                FROM offers o
+                LEFT JOIN property_offers po  ON po.offer_id  = o.id
+                    AND po.property_id = rt.property_id
+                LEFT JOIN room_type_offers rto ON rto.offer_id = o.id
+                    AND rto.room_type_id = rt.id
+                WHERE (po.id IS NOT NULL OR rto.id IS NOT NULL)
+                  AND o.is_active    = TRUE
+                  AND o.is_promocode = FALSE
+            ), 0) AS best_offer_percentage,
+            rates.base_total_price
+                * (1 - COALESCE((
+                    SELECT MAX(o.offer_percentage)
+                    FROM offers o
+                    LEFT JOIN property_offers po  ON po.offer_id  = o.id
+                        AND po.property_id = rt.property_id
+                    LEFT JOIN room_type_offers rto ON rto.offer_id = o.id
+                        AND rto.room_type_id = rt.id
+                    WHERE (po.id IS NOT NULL OR rto.id IS NOT NULL)
+                      AND o.is_active    = TRUE
+                      AND o.is_promocode = FALSE
+                ), 0) / 100)          AS display_price_per_room
+
+        FROM room_types rt
+        JOIN bed_types bt
+            ON bt.id = rt.bed_type_id
+        JOIN (
+            SELECT room_type_id,
+                   MIN(available_rooms) AS min_available_rooms,
+                   COUNT(date)          AS days_covered
+            FROM room_inventory
+            WHERE date >= :checkIn
+              AND date <  :checkOut
+            GROUP BY room_type_id
+        ) inv ON inv.room_type_id = rt.id
+        JOIN (
+            SELECT room_type_id,
+                   SUM(price) AS base_total_price,
+                   MIN(price) AS base_price_per_night
+            FROM room_rates
+            WHERE date >= :checkIn
+              AND date <  :checkOut
+            GROUP BY room_type_id
+        ) rates ON rates.room_type_id = rt.id
+        WHERE rt.property_id = :propertyId
+          AND inv.min_available_rooms >= :rooms
+          AND inv.days_covered        = :numNights
+        """);
 
         MapSqlParameterSource params = buildRequiredParams(propertyId, req);
         appendOptionalFilters(sql, params, req);
@@ -64,7 +96,8 @@ public class RoomSearchRepository {
         String sortColumn = switch (req.getSortField() != null ? req.getSortField() : "") {
             case "size_sqft" -> "rt.size_sqft";
             case "max_occupancy" -> "rt.max_occupancy";
-            default -> "rates.base_total_price";
+            case "display_price"  -> "display_price_per_room"; 
+            default -> "display_price_per_room"; 
         };
         String sortDir = "desc".equalsIgnoreCase(req.getSortDirection()) ? "DESC" : "ASC";
         sql.append(" ORDER BY ").append(sortColumn).append(" ").append(sortDir);
@@ -89,7 +122,7 @@ public class RoomSearchRepository {
                         GROUP BY room_type_id
                     ) inv ON inv.room_type_id = rt.id
                     JOIN (
-                        SELECT room_type_id, MIN(price) AS base_price_per_night
+                        SELECT room_type_id, MIN(price) AS base_price_per_night, SUM(price) AS base_total_price
                         FROM room_rates
                         WHERE date >= :checkIn AND date <  :checkOut
                         GROUP BY room_type_id
@@ -174,13 +207,45 @@ public class RoomSearchRepository {
         }
 
         if (req.getPriceMin() != null) {
-            sql.append(" AND rates.base_price_per_night >= :priceMin ");
-            params.addValue("priceMin", req.getPriceMin());
-        }
-        if (req.getPriceMax() != null) {
-            sql.append(" AND rates.base_price_per_night <= :priceMax ");
-            params.addValue("priceMax", req.getPriceMax());
-        }
+    sql.append("""
+            AND rates.base_total_price
+                * (1 - COALESCE((
+                    SELECT MAX(o.offer_percentage)
+                    FROM offers o
+                    LEFT JOIN property_offers po  ON po.offer_id  = o.id
+                        AND po.property_id = rt.property_id
+                    LEFT JOIN room_type_offers rto ON rto.offer_id = o.id
+                        AND rto.room_type_id = rt.id
+                    WHERE (po.id IS NOT NULL OR rto.id IS NOT NULL)
+                      AND o.is_active    = TRUE
+                      AND o.is_promocode = FALSE
+                ), 0) / 100)
+                * CEIL(:guests::float / NULLIF(rt.max_occupancy, 0))
+                >= :priceMin
+            """);
+    params.addValue("priceMin", req.getPriceMin());
+    params.addValue("guests", req.getGuests());
+}
+if (req.getPriceMax() != null) {
+    sql.append("""
+            AND rates.base_total_price
+                * (1 - COALESCE((
+                    SELECT MAX(o.offer_percentage)
+                    FROM offers o
+                    LEFT JOIN property_offers po  ON po.offer_id  = o.id
+                        AND po.property_id = rt.property_id
+                    LEFT JOIN room_type_offers rto ON rto.offer_id = o.id
+                        AND rto.room_type_id = rt.id
+                    WHERE (po.id IS NOT NULL OR rto.id IS NOT NULL)
+                      AND o.is_active    = TRUE
+                      AND o.is_promocode = FALSE
+                ), 0) / 100)
+                * CEIL(:guests::float / NULLIF(rt.max_occupancy, 0))
+                <= :priceMax
+            """);
+    params.addValue("priceMax", req.getPriceMax());
+    params.addValue("guests", req.getGuests());
+}
 
         if (req.getOccupancyMin() != null) {
             sql.append(" AND rt.max_occupancy >= :occupancyMin ");
