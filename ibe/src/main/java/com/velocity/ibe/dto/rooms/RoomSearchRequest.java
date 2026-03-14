@@ -1,16 +1,17 @@
 package com.velocity.ibe.dto.rooms;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -31,7 +32,7 @@ public class RoomSearchRequest {
     private int limit = 10;
 
     private UUID bedTypeId;
-    private List<String> amenities;
+    private List<UUID> amenities;
     private BigDecimal priceMin;
     private BigDecimal priceMax;
     private Integer occupancyMin;
