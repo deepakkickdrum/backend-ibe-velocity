@@ -20,3 +20,10 @@ springboot4-dotenv resolves the env vars to the shell, and we can then use them 
 `-Dspring-boot.run.profiles=dev` is required in order to mention the profile
 
 use `docker compose up` to run a local postgresql server if needed
+
+## Database migrations
+
+Flyway is enabled for schema migrations. On application startup, migrations from `ibe/src/main/resources/db/migration` are applied automatically.
+
+- Add new migrations using Flyway naming, for example: `V2__add_indexes.sql`
+- Keep `spring.jpa.hibernate.ddl-auto=validate` so Hibernate validates schema rather than mutating it
