@@ -163,7 +163,13 @@ public class RoomSearchRepository {
     private void appendOptionalFilters(StringBuilder sql, MapSqlParameterSource params, RoomSearchRequest req) {
 
         if (req.getBedTypeId() != null) {
-            sql.append(" AND rt.bed_type_id = :bedTypeId ");
+            sql.append("""
+                    AND rt.bed_type_id = (
+                        SELECT bt2.id FROM bed_types bt2
+                        JOIN filter_options fo ON fo.name = bt2.name
+                        WHERE fo.id = :bedTypeId
+                    )
+                    """);
             params.addValue("bedTypeId", req.getBedTypeId());
         }
 
