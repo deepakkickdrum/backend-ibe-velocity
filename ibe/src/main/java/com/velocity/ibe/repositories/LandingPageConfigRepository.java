@@ -1,8 +1,10 @@
 package com.velocity.ibe.repositories;
 
 import com.velocity.ibe.entities.LandingPageConfig;
-import com.velocity.ibe.entities.Property;
+
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LandingPageConfigRepository extends JpaRepository<LandingPageConfig, Property> {
+public interface LandingPageConfigRepository extends JpaRepository<LandingPageConfig, UUID> {
 }
