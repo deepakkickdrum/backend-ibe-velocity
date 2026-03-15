@@ -162,18 +162,23 @@ public class RoomSearchRepository {
          }
 
         if (req.getAmenities() != null && !req.getAmenities().isEmpty()) {
-    sql.append("""
-        AND rt.id IN (
-            SELECT rta.room_type_id
-            FROM room_type_amenities rta
-            WHERE rta.amenity_id = ANY(:amenityIds)
-            GROUP BY rta.room_type_id
-            HAVING COUNT(DISTINCT rta.amenity_id) = :amenityCount
-        )
-    """);
-    params.addValue("amenityIds", req.getAmenities().toArray(new UUID[0]));
-    params.addValue("amenityCount", req.getAmenities().size());
-}
+            sql.append("""
+                AND rt.id IN (
+                    SELECT rta.room_type_id
+                    FROM room_type_amenities rta
+                    JOIN amenities a ON a.id = rta.amenity_id
+                    JOIN filter_options fo ON fo.name = a.label
+                    JOIN filters f ON f.id = fo.filter_id
+                    WHERE fo.id = ANY(:amenityFilterOptionIds)
+                      AND f.filter_name = 'Amenities'
+                      AND a.property_id = :propertyId
+                    GROUP BY rta.room_type_id
+                    HAVING COUNT(DISTINCT fo.id) = :amenityCount
+                )
+            """);
+            params.addValue("amenityFilterOptionIds", req.getAmenities().toArray(new UUID[0]));
+            params.addValue("amenityCount", req.getAmenities().size());
+        }
     }
 
     private MapSqlParameterSource buildRequiredParams(UUID propertyId, RoomSearchRequest req) {
