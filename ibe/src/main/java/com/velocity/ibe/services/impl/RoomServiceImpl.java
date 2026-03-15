@@ -26,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -66,8 +67,8 @@ public class RoomServiceImpl implements RoomService {
     public RoomSearchResponse searchRooms(UUID propertyId, RoomSearchRequest req) {
 
         if (!req.getCheckIn().isBefore(req.getCheckOut())) {
-              throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST, "CheckIn date must be before CheckOut date" );
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "CheckIn date must be before CheckOut date");
         }
 
         Integer maxBookingRooms = roomSearchRepository.getMaxBookingRooms(propertyId);
@@ -88,13 +89,11 @@ public class RoomServiceImpl implements RoomService {
             }
             room.put("rooms_needed", roomsNeeded);
             room.put("is_exact_match", roomsNeeded <= req.getRooms());
-            BigDecimal basePrice = (BigDecimal) room.get("base_total_price");
-            UUID roomTypeId = (UUID) room.get("id");
-            List<Map<String, Object>> roomTypeOffers = roomSearchRepository.getRoomTypeOffers(roomTypeId);
-            room.put("display_price", price.calculateDisplayPrice(basePrice, propertyOffers, roomTypeOffers));
+            BigDecimal displayPricePerRoom = (BigDecimal) room.get("display_price_per_room");
+            int roomsToPrice = (roomsNeeded <= req.getRooms()) ? req.getRooms() : roomsNeeded;
+            room.put("display_price", displayPricePerRoom.multiply(BigDecimal.valueOf(roomsToPrice)));
         }
 
-        //pagination
         Map<String, Object> pagination = paginationHelper.build(
                 req.getPage(),
                 req.getLimit(),
@@ -103,7 +102,6 @@ public class RoomServiceImpl implements RoomService {
                 totalCount
         );
 
-        //meta
         Map<String, Object> meta = filterSort.buildMeta(
                 roomSearchRepository.getFiltersForProperty(propertyId),
                 roomSearchRepository.getSortOptionsForProperty(propertyId)
@@ -151,6 +149,7 @@ public class RoomServiceImpl implements RoomService {
 
         List<RoomRate> rates = ratesFuture.join();
         List<Offer> offers = offersFuture.join();
+
         BigDecimal totalPrice = rates.stream()
             .map(RoomRate::getPrice)
             .reduce(BigDecimal.ZERO, BigDecimal::add)
@@ -158,20 +157,25 @@ public class RoomServiceImpl implements RoomService {
             .setScale(2, RoundingMode.HALF_UP);
 
         StandardRateDto standardRate = new StandardRateDto(totalPrice);
+
         List<DealDto> deals = offers.stream()
+            .filter(offer -> isOfferApplicable(offer, checkIn, checkOut))
             .map(o -> buildDealDto(
                 o.getName(),
                 o.getDescription(),
                 o.getOfferPercentage(),
                 totalPrice))
             .toList();
+
         List<String> amenities = roomType.getAmenities()
             .stream()
             .map(rta -> rta.getAmenity().getLabel())
             .toList();
+
         String bedType = roomType.getBedType() != null
             ? roomType.getBedType().getName()
             : null;
+
         return new RoomDetailResponseDto(
             roomType.getId(),
             roomType.getTitle(),
@@ -218,7 +222,24 @@ public class RoomServiceImpl implements RoomService {
         );
     }
 
-    //helpers
+    // ── Helpers ───────────────────────────────────
+    private boolean isOfferApplicable(
+        Offer offer,
+        LocalDate checkIn,
+        LocalDate checkOut
+    ) {
+        String name = offer.getName().toLowerCase();
+        if (name.contains("weekend")) {
+            return checkIn.datesUntil(checkOut)
+                .anyMatch(date ->
+                    date.getDayOfWeek() == DayOfWeek.FRIDAY ||
+                    date.getDayOfWeek() == DayOfWeek.SATURDAY ||
+                    date.getDayOfWeek() == DayOfWeek.SUNDAY
+                );
+        }
+        return true;
+    }
+
     private DealDto buildDealDto(
         String name,
         String description,
